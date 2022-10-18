@@ -42,6 +42,14 @@ const STAGES = {
   RESULT: 'result'
 }
 
+const STAGE_INSTRUCTIONS = {
+  [STAGES.START]: "Mit dem Start-Button geht's los!",
+  [STAGES.ADJECTIVE]: 'Welches Attribut trifft am ehesten auf dich zu?',
+  [STAGES.NOUN]: 'Welcher dieser Charaktere trifft am ehesten auf dich zu?',
+  [STAGES.PLACE]: 'Zu welcher Stadt fühlst du dich am ehesten zugehörig?',
+  [STAGES.RESULT]: 'Das ist dein Tatort-Charakter:'
+}
+
 const NEXT_STAGE = {
   [STAGES.START]: STAGES.ADJECTIVE,
   [STAGES.ADJECTIVE]: STAGES.NOUN,
@@ -227,6 +235,9 @@ const App = () => {
         ))}
       </Stack>
       <br />
+
+      <Typography>{STAGE_INSTRUCTIONS[stage.stage]}</Typography>
+
       {![STAGES.START, STAGES.RESULT].includes(stage.stage) && (
         <>
           <Stack direction={'row'} gap={'10px'} className={styles.choices}>
