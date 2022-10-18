@@ -1,5 +1,6 @@
 {
   "name": "tatort-wer-bin-ich",
+  "homepage": "/files/tatort-wer-bin-ich/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

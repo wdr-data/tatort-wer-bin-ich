@@ -5,6 +5,7 @@ import Button from '@mui/material/Button'
 import styles from './App.module.scss'
 
 import data from './data.json'
+import { Chip, Link, Stack, Typography } from '@mui/material'
 
 console.log(data)
 
@@ -16,7 +17,8 @@ const TUPLES = data.tuples.map(tuple => {
     titlesIdx,
     yearsIdx,
     descriptionsIdx,
-    linksIdx
+    linksIdx,
+    chunksIdx
   ] = tuple
   return {
     nouns: data.nouns[nounsIdx],
@@ -25,7 +27,8 @@ const TUPLES = data.tuples.map(tuple => {
     titles: data.titles[titlesIdx],
     years: data.years[yearsIdx],
     descriptions: data.descriptions[descriptionsIdx],
-    links: data.links[linksIdx]
+    links: data.links[linksIdx],
+    chunks: data.chunks[chunksIdx]
   }
 })
 
@@ -71,23 +74,24 @@ const getRandomOptions = (options, count) => {
   return result
 }
 
-const filterTuples = (tuples, choice, stage) => {
-  return tuples.filter(tuple => tuple[stage] === choice)
+const filterTuples = (tuples, choicesMade) => {
+  return tuples.filter(tuple =>
+    Object.entries(choicesMade).reduce(
+      (acc, [stage, choice]) => acc && tuple[stage] === choice,
+      true
+    )
+  )
 }
 
 const STAGE_INITIAL_STATE = {
-  stage: STAGES.ADJECTIVE,
-  choicesAvailable: {
-    [STAGES.ADJECTIVE]: getRandomOptions(
-      TUPLES.map(tuple => tuple.adjectives),
-      3
-    )
-  },
-  choices: {},
+  stage: STAGES.START,
+  choicesAvailable: {},
+  choicesMade: {},
   tuples: TUPLES
 }
 
 const STAGE_ACTIONS = {
+  START: 'start',
   CHOOSE: 'choose',
   REROLL: 'reroll',
   BACK: 'back',
@@ -97,15 +101,25 @@ const STAGE_ACTIONS = {
 const stageReducer = (state, action) => {
   console.log('reducing', state, action)
   switch (action.type) {
+    case STAGE_ACTIONS.START:
+      return {
+        ...state,
+        stage: STAGES.ADJECTIVE,
+        choicesAvailable: {
+          [STAGES.ADJECTIVE]: getRandomOptions(
+            TUPLES.map(tuple => tuple.adjectives),
+            3
+          )
+        }
+      }
     case STAGE_ACTIONS.CHOOSE:
-      const filteredTuples = filterTuples(
-        state.tuples,
-        action.payload,
-        state.stage
-      )
+      const nextChoicesMade = {
+        ...state.choicesMade,
+        [state.stage]: action.payload
+      }
+      const filteredTuples = filterTuples(state.tuples, nextChoicesMade)
       const nextStage = NEXT_STAGE[state.stage]
 
-      console.log('filteredTuples', filteredTuples)
       return {
         ...state,
         stage: nextStage,
@@ -117,10 +131,7 @@ const stageReducer = (state, action) => {
             3
           )
         },
-        choicesMade: {
-          ...state.choices,
-          [state.stage]: action.payload
-        },
+        choicesMade: nextChoicesMade,
         tuples: filteredTuples
       }
     case STAGE_ACTIONS.REROLL:
@@ -135,9 +146,15 @@ const stageReducer = (state, action) => {
         }
       }
     case STAGE_ACTIONS.BACK:
+      const prevChoicesMade = {
+        ...state.choicesMade
+      }
+      delete prevChoicesMade[PREVIOUS_STAGE[state.stage]]
       return {
         ...state,
-        stage: PREVIOUS_STAGE[state.stage]
+        stage: PREVIOUS_STAGE[state.stage],
+        choicesMade: prevChoicesMade,
+        tuples: filterTuples(TUPLES, prevChoicesMade)
       }
     case STAGE_ACTIONS.RESET:
       return STAGE_INITIAL_STATE
@@ -149,6 +166,10 @@ const stageReducer = (state, action) => {
 const App = () => {
   const [stage, dispatch] = useReducer(stageReducer, STAGE_INITIAL_STATE)
   console.log('stage', stage)
+
+  const handleStart = () => {
+    dispatch({ type: STAGE_ACTIONS.START })
+  }
 
   const handleChoose = choice => {
     dispatch({ type: STAGE_ACTIONS.CHOOSE, payload: choice })
@@ -167,33 +188,83 @@ const App = () => {
   }
 
   return (
-    <div className={styles.App}>
-      <h1>Tatort – Wer bin ich?</h1>
-      <p>Finde heraus, welcher Tatort dir am ähnlichsten ist!</p>
-      {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(stage.stage) && (
-        <Button variant='contained' onClick={handleReroll}>
-          Reroll
-        </Button>
-      )}
-      <Button variant='contained' onClick={handleReset}>
-        Reset
-      </Button>
-      {[STAGES.NOUN, STAGES.PLACE, STAGES.RESULT].includes(stage.stage) && (
-        <Button variant='contained' onClick={handleBack}>
-          Zurück (Broken)
-        </Button>
-      )}
-      <div className={styles.choices}>
-        {stage.choicesAvailable[stage.stage].map(choice => (
-          <Button
-            key={choice}
-            variant='contained'
-            onClick={() => handleChoose(choice)}
-          >
-            {choice}
+    <div className={styles.app}>
+      <Typography variant='h1'>Tatort – Wer bin ich?</Typography>
+      <Typography type='subtitle1'>
+        Finde heraus, welcher Tatort dir am ähnlichsten ist!
+      </Typography>
+      <Stack direction={'row'} gap={'10px'} className={styles.controls}>
+        {[STAGES.NOUN, STAGES.PLACE, STAGES.RESULT].includes(stage.stage) && (
+          <Button variant='contained' onClick={handleBack}>
+            Zurück
           </Button>
+        )}
+
+        {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(
+          stage.stage
+        ) && (
+          <Button variant='contained' onClick={handleReroll}>
+            Reroll
+          </Button>
+        )}
+
+        {stage.stage !== STAGES.START && (
+          <Button variant='contained' onClick={handleReset}>
+            Reset
+          </Button>
+        )}
+
+        {stage.stage === STAGES.START && (
+          <Button variant='contained' onClick={() => handleStart()}>
+            Start
+          </Button>
+        )}
+      </Stack>
+      <br />
+      <Stack direction={'row'} gap={'10px'} className={styles.choicesMade}>
+        {Object.entries(stage.choicesMade).map(([stage, choice]) => (
+          <Chip key={stage} label={choice} color='secondary' />
         ))}
-      </div>
+      </Stack>
+      <br />
+      {![STAGES.START, STAGES.RESULT].includes(stage.stage) && (
+        <>
+          <Stack direction={'row'} gap={'10px'} className={styles.choices}>
+            {stage.choicesAvailable[stage.stage].map(choice => (
+              <Button
+                key={choice}
+                variant='contained'
+                onClick={() => handleChoose(choice)}
+              >
+                {choice}
+              </Button>
+            ))}
+          </Stack>
+          <br />
+        </>
+      )}
+
+      {stage.stage === STAGES.RESULT && (
+        <Stack
+          direction='column'
+          alignItems={'start'}
+          className={styles.result}
+        >
+          <Chip
+            variant='outlined'
+            color='secondary'
+            label={stage.tuples[0].chunks}
+          />
+          <br />
+          <Typography variant='h2'>{stage.tuples[0].titles}</Typography>
+          <Typography variant='subtitle2'>{stage.tuples[0].years}</Typography>
+          <Link href={stage.tuples[0].links}>Link zur Folge</Link>
+          <br />
+          <Typography variant='body2'>
+            {stage.tuples[0].descriptions}
+          </Typography>
+        </Stack>
+      )}
     </div>
   )
 }
