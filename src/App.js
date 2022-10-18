@@ -95,6 +95,7 @@ const STAGE_INITIAL_STATE = {
   stage: STAGES.START,
   choicesAvailable: {},
   choicesMade: {},
+  canReroll: true,
   tuples: TUPLES
 }
 
@@ -139,6 +140,7 @@ const stageReducer = (state, action) => {
             3
           )
         },
+        canReroll: filteredTuples.length > 3,
         choicesMade: nextChoicesMade,
         tuples: filteredTuples
       }
@@ -157,12 +159,14 @@ const stageReducer = (state, action) => {
       const prevChoicesMade = {
         ...state.choicesMade
       }
+      const filteredTuples_ = filterTuples(TUPLES, prevChoicesMade)
       delete prevChoicesMade[PREVIOUS_STAGE[state.stage]]
       return {
         ...state,
         stage: PREVIOUS_STAGE[state.stage],
         choicesMade: prevChoicesMade,
-        tuples: filterTuples(TUPLES, prevChoicesMade)
+        tuples: filteredTuples_,
+        canReroll: filteredTuples_.length > 3
       }
     case STAGE_ACTIONS.RESET:
       return STAGE_INITIAL_STATE
@@ -214,13 +218,12 @@ const App = () => {
           </Button>
         )}
 
-        {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(
-          stage.stage
-        ) && (
-          <Button variant='contained' onClick={handleReroll}>
-            Neue Wörter
-          </Button>
-        )}
+        {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(stage.stage) &&
+          stage.canReroll && (
+            <Button variant='contained' onClick={handleReroll}>
+              Neue Wörter
+            </Button>
+          )}
 
         {stage.stage !== STAGES.START && (
           <Button variant='contained' onClick={handleReset}>
