@@ -1,14 +1,28 @@
-$padding-vertical: 10px;
+$padding-vertical: 0px;
+$padding-horizontal: 0px;
 
 .app {
   height: calc(100% - $padding-vertical * 2);
-  width: calc(100% - 30px);
-  padding: $padding-vertical 15px;
+  width: calc(100% - $padding-horizontal * 2);
+  padding: $padding-vertical $padding-horizontal;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  .button {
+    background: linear-gradient(to bottom, #030377 0%, #010141 101%);
+    transition-property: unset;
+    font-size: 1.2rem;
+    padding: 0 10px;
+    &:hover {
+      background: linear-gradient(to bottom, #030377 0%, #030377 101%);
+    }
+
+    &:focus {
+      text-decoration: underline;
+    }
+  }
 }
 
 .controls {
@@ -16,7 +30,7 @@ $padding-vertical: 10px;
   top: 0;
   left: 0;
   right: 0;
-  padding: 10px 15px;
+  padding: $padding-vertical $padding-horizontal;
 }
 
 .controlSpacer {
@@ -26,8 +40,7 @@ $padding-vertical: 10px;
 }
 
 .choicesMade {
-  height: 50px;
-  //margin-top: -50px;
+  margin-bottom: 10px;
 }
 
 .chunk {
@@ -42,8 +55,9 @@ $padding-vertical: 10px;
 
 .resultWrapper {
   position: relative;
-  flex-grow: 1;
-  max-height: 220px;
+  flex-grow: 2;
+  flex-shrink: 10;
+  min-height: 100px;
   padding: 5px 0 0 0;
   margin: 0;
 
@@ -68,6 +82,13 @@ $padding-vertical: 10px;
     padding: 15px 0;
     overflow: auto;
     text-align: left;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 

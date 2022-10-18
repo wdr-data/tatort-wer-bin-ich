@@ -9,7 +9,7 @@ const theme = createTheme({
   typography: {
     fontFamily: ['Thesis', 'sans-serif'].join(','),
     allVariants: {
-      color: '#000000'
+      color: '#333333'
     },
     body1: {
       marginBottom: '.75rem',
@@ -30,7 +30,7 @@ const theme = createTheme({
       main: 'rgb(4, 3, 73)'
     },
     secondary: {
-      main: 'rgb(55, 69, 217)'
+      main: 'rgb(0, 0, 255)'
     }
   }
 })

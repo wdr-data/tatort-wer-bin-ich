@@ -1,6 +1,12 @@
 import { useReducer } from 'react'
 
-import { Button, Chip, Link, Stack, Typography } from '@mui/material'
+import {
+  Button as MUIButton,
+  Chip,
+  Link,
+  Stack,
+  Typography
+} from '@mui/material'
 import Highlighter from 'react-highlight-words'
 
 import styles from './App.module.scss'
@@ -8,6 +14,19 @@ import styles from './App.module.scss'
 import data from './data.json'
 
 console.log(data)
+
+const Button = ({ children, ...props }) => (
+  <MUIButton
+    {...props}
+    className={styles.button}
+    disableElevation
+    disableFocusRipple
+    disableRipple
+    disableTouchRipple
+  >
+    {children}
+  </MUIButton>
+)
 
 const TUPLES = data.tuples.map(tuple => {
   const [
@@ -237,7 +256,12 @@ const App = () => {
       )}
 
       {![STAGES.START, STAGES.ADJECTIVE].includes(stage.stage) && (
-        <Stack direction={'row'} gap={'10px'} className={styles.choicesMade}>
+        <Stack
+          direction={'row'}
+          gap={'10px'}
+          flexWrap={'wrap'}
+          className={styles.choicesMade}
+        >
           {Object.entries(stage.choicesMade).map(([stage, choice]) => (
             <Chip key={stage} label={choice} color='secondary' />
           ))}
