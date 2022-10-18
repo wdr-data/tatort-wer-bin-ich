@@ -12,3 +12,19 @@
   padding: 4px;
   margin: 20px;
 }
+
+.descriptionHighlight {
+  background-color: rgba(255, 248, 148, 0.9);
+  //background-color: rgb(212, 216, 226);
+  border: 1px solid rgba(189, 158, 0, 0.5);
+  //border: 1px solid rgb(55, 69, 217);
+
+  //white-space: both;
+  //white-space: nowrap;
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+
+  padding: 0 4px;
+  font-weight: bold;
+  border-radius: 3px;
+}

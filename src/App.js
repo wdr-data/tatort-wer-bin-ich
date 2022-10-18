@@ -1,11 +1,11 @@
 import { useReducer } from 'react'
 
-import Button from '@mui/material/Button'
+import { Button, Chip, Link, Stack, Typography } from '@mui/material'
+import Highlighter from 'react-highlight-words'
 
 import styles from './App.module.scss'
 
 import data from './data.json'
-import { Chip, Link, Stack, Typography } from '@mui/material'
 
 console.log(data)
 
@@ -267,12 +267,28 @@ const App = () => {
             label={stage.tuples[0].chunks}
           />
           <br />
-          <Typography variant='h2'>{stage.tuples[0].titles}</Typography>
+          <Typography variant='h2'>
+            <Highlighter
+              highlightClassName={styles.descriptionHighlight}
+              searchWords={[stage.tuples[0].chunks]}
+              autoEscape={true}
+              textToHighlight={stage.tuples[0].titles}
+            />
+          </Typography>
           <Typography variant='subtitle2'>{stage.tuples[0].years}</Typography>
           <Link href={stage.tuples[0].links}>Link zur Folge</Link>
           <br />
           <Typography variant='body2'>
-            {stage.tuples[0].descriptions}
+            <Highlighter
+              highlightClassName={styles.descriptionHighlight}
+              highlightStyle={{
+                whiteSpace:
+                  stage.tuples[0].chunks.length > 40 ? 'pre-wrap' : 'nowrap'
+              }}
+              searchWords={[stage.tuples[0].chunks]}
+              autoEscape={true}
+              textToHighlight={stage.tuples[0].descriptions}
+            />
           </Typography>
         </Stack>
       )}
