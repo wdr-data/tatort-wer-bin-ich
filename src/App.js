@@ -159,8 +159,8 @@ const stageReducer = (state, action) => {
       const prevChoicesMade = {
         ...state.choicesMade
       }
-      const filteredTuples_ = filterTuples(TUPLES, prevChoicesMade)
       delete prevChoicesMade[PREVIOUS_STAGE[state.stage]]
+      const filteredTuples_ = filterTuples(TUPLES, prevChoicesMade)
       return {
         ...state,
         stage: PREVIOUS_STAGE[state.stage],
