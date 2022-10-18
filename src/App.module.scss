@@ -1,6 +1,33 @@
+$padding-vertical: 10px;
+
 .app {
-  max-width: 600px;
+  height: calc(100% - $padding-vertical * 2);
+  width: calc(100% - 30px);
+  padding: $padding-vertical 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   padding: 10px 15px;
+}
+
+.controlSpacer {
+  height: 55px;
+  width: 100%;
+  justify-self: start;
+}
+
+.choicesMade {
+  height: 50px;
+  //margin-top: -50px;
 }
 
 .chunk {
@@ -11,6 +38,37 @@
   border-radius: 4px;
   padding: 4px;
   margin: 20px;
+}
+
+.resultWrapper {
+  position: relative;
+  flex-grow: 1;
+  max-height: 220px;
+  padding: 5px 0 0 0;
+  margin: 0;
+
+  .fadeGradientTop {
+    position: absolute;
+    top: 5;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background: linear-gradient(to bottom, #e2e6ef, transparent);
+  }
+  .fadeGradientBottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background: linear-gradient(to top, #e2e6ef, transparent);
+  }
+  .result {
+    max-height: calc(100% - 30px);
+    padding: 15px 0;
+    overflow: auto;
+    text-align: left;
+  }
 }
 
 .descriptionHighlight {

@@ -197,11 +197,17 @@ const App = () => {
 
   return (
     <div className={styles.app}>
-      <Typography variant='h1'>Tatort – Wer bin ich?</Typography>
+      {/* <Typography variant='h1'>Tatort – Wer bin ich?</Typography>
       <Typography type='subtitle1'>
         Finde heraus, welcher Tatort dir am ähnlichsten ist!
-      </Typography>
-      <Stack direction={'row'} gap={'10px'} className={styles.controls}>
+      </Typography> */}
+
+      <Stack
+        direction={'row'}
+        gap={'10px'}
+        alignItems={'start'}
+        className={styles.controls}
+      >
         {[STAGES.NOUN, STAGES.PLACE, STAGES.RESULT].includes(stage.stage) && (
           <Button variant='contained' onClick={handleBack}>
             Zurück
@@ -212,7 +218,7 @@ const App = () => {
           stage.stage
         ) && (
           <Button variant='contained' onClick={handleReroll}>
-            Reroll
+            Neue Wörter
           </Button>
         )}
 
@@ -221,76 +227,93 @@ const App = () => {
             Reset
           </Button>
         )}
+      </Stack>
 
-        {stage.stage === STAGES.START && (
-          <Button variant='contained' onClick={() => handleStart()}>
-            Start
-          </Button>
-        )}
-      </Stack>
-      <br />
-      <Stack direction={'row'} gap={'10px'} className={styles.choicesMade}>
-        {Object.entries(stage.choicesMade).map(([stage, choice]) => (
-          <Chip key={stage} label={choice} color='secondary' />
-        ))}
-      </Stack>
-      <br />
+      {stage.stage === STAGES.RESULT && (
+        <div className={styles.controlSpacer} />
+      )}
+
+      {![STAGES.START, STAGES.ADJECTIVE].includes(stage.stage) && (
+        <Stack direction={'row'} gap={'10px'} className={styles.choicesMade}>
+          {Object.entries(stage.choicesMade).map(([stage, choice]) => (
+            <Chip key={stage} label={choice} color='secondary' />
+          ))}
+        </Stack>
+      )}
 
       <Typography>{STAGE_INSTRUCTIONS[stage.stage]}</Typography>
 
+      {stage.stage === STAGES.START && (
+        <Button variant='contained' onClick={() => handleStart()}>
+          Start
+        </Button>
+      )}
+
       {![STAGES.START, STAGES.RESULT].includes(stage.stage) && (
-        <>
-          <Stack direction={'row'} gap={'10px'} className={styles.choices}>
-            {stage.choicesAvailable[stage.stage].map(choice => (
-              <Button
-                key={choice}
-                variant='contained'
-                onClick={() => handleChoose(choice)}
-              >
-                {choice}
-              </Button>
-            ))}
-          </Stack>
-          <br />
-        </>
+        <Stack
+          direction={'row'}
+          gap={'10px'}
+          flexWrap={'wrap'}
+          justifyContent={'center'}
+          className={styles.choices}
+        >
+          {stage.choicesAvailable[stage.stage].map(choice => (
+            <Button
+              key={choice}
+              variant='contained'
+              onClick={() => handleChoose(choice)}
+            >
+              {choice}
+            </Button>
+          ))}
+        </Stack>
       )}
 
       {stage.stage === STAGES.RESULT && (
-        <Stack
-          direction='column'
-          alignItems={'start'}
-          className={styles.result}
-        >
-          <Chip
-            variant='outlined'
-            color='secondary'
-            label={stage.tuples[0].chunks}
-          />
-          <br />
-          <Typography variant='h2'>
-            <Highlighter
-              highlightClassName={styles.descriptionHighlight}
-              searchWords={[stage.tuples[0].chunks]}
-              autoEscape={true}
-              textToHighlight={stage.tuples[0].titles}
-            />
-          </Typography>
-          <Typography variant='subtitle2'>{stage.tuples[0].years}</Typography>
-          <Link href={stage.tuples[0].links}>Link zur Folge</Link>
-          <br />
-          <Typography variant='body2'>
-            <Highlighter
-              highlightClassName={styles.descriptionHighlight}
-              highlightStyle={{
-                whiteSpace:
-                  stage.tuples[0].chunks.length > 40 ? 'pre-wrap' : 'nowrap'
-              }}
-              searchWords={[stage.tuples[0].chunks]}
-              autoEscape={true}
-              textToHighlight={stage.tuples[0].descriptions}
-            />
-          </Typography>
-        </Stack>
+        <Chip
+          variant='outlined'
+          color='secondary'
+          label={stage.tuples[0].chunks}
+        />
+      )}
+
+      {stage.stage === STAGES.RESULT && (
+        <div className={styles.resultWrapper}>
+          <div className={styles.fadeGradientTop} />
+          <div className={styles.fadeGradientBottom} />
+
+          <Stack
+            direction='column'
+            alignItems={'start'}
+            className={styles.result}
+          >
+            <Typography variant='h2'>
+              <Highlighter
+                highlightClassName={styles.descriptionHighlight}
+                searchWords={[stage.tuples[0].chunks]}
+                autoEscape={true}
+                textToHighlight={stage.tuples[0].titles}
+              />
+            </Typography>
+            <Typography variant='subtitle2'>{stage.tuples[0].years}</Typography>
+            <Link target='_blank' href={stage.tuples[0].links}>
+              Link zur Folge
+            </Link>
+            <br />
+            <Typography variant='body2'>
+              <Highlighter
+                highlightClassName={styles.descriptionHighlight}
+                highlightStyle={{
+                  whiteSpace:
+                    stage.tuples[0].chunks.length > 40 ? 'pre-wrap' : 'nowrap'
+                }}
+                searchWords={[stage.tuples[0].chunks]}
+                autoEscape={true}
+                textToHighlight={stage.tuples[0].descriptions}
+              />
+            </Typography>
+          </Stack>
+        </div>
       )}
     </div>
   )

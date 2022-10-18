@@ -1,10 +1,22 @@
 body {
+  height: 400px;
+  max-height: 400px;
+  width: 100vw;
+  outline: 2px solid red;
+
   margin: 0;
   font-family: 'Thesis', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   background-color: #e2e6ef;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 code {
