@@ -81,6 +81,18 @@ const PREVIOUS_STAGE = Object.keys(NEXT_STAGE).reduce((acc, key) => {
   return acc
 }, {})
 
+const getUnique = list => {
+  const unique = []
+  const seen = new Set()
+  list.forEach(item => {
+    if (!seen.has(item)) {
+      unique.push(item)
+      seen.add(item)
+    }
+  })
+  return unique
+}
+
 const getRandomOptions = (options, count) => {
   const result = []
   const maxTries = 100
@@ -135,7 +147,7 @@ const stageReducer = (state, action) => {
         stage: STAGES.ADJECTIVE,
         choicesAvailable: {
           [STAGES.ADJECTIVE]: getRandomOptions(
-            TUPLES.map(tuple => tuple.adjectives),
+            getUnique(TUPLES.map(tuple => tuple.adjectives)),
             3
           )
         }
@@ -147,6 +159,9 @@ const stageReducer = (state, action) => {
       }
       const filteredTuples = filterTuples(state.tuples, nextChoicesMade)
       const nextStage = NEXT_STAGE[state.stage]
+      const nextChoicesList = getUnique(
+        filteredTuples.map(tuple => tuple[nextStage])
+      )
 
       return {
         ...state,
@@ -154,12 +169,9 @@ const stageReducer = (state, action) => {
         choicesAvailable: {
           ...state.choicesAvailable,
           // TODO: Maybe choose from unique options only?
-          [nextStage]: getRandomOptions(
-            filteredTuples.map(tuple => tuple[nextStage]),
-            3
-          )
+          [nextStage]: getRandomOptions(nextChoicesList, 3)
         },
-        canReroll: filteredTuples.length > 3,
+        canReroll: nextChoicesList.length > 3,
         choicesMade: nextChoicesMade,
         tuples: filteredTuples
       }
@@ -169,7 +181,7 @@ const stageReducer = (state, action) => {
         choicesAvailable: {
           ...state.choicesAvailable,
           [state.stage]: getRandomOptions(
-            state.tuples.map(tuple => tuple[state.stage]),
+            getUnique(state.tuples.map(tuple => tuple[state.stage])),
             3
           )
         }
@@ -185,7 +197,10 @@ const stageReducer = (state, action) => {
         stage: PREVIOUS_STAGE[state.stage],
         choicesMade: prevChoicesMade,
         tuples: filteredTuples_,
-        canReroll: filteredTuples_.length > 3
+        canReroll:
+          getUnique(
+            filteredTuples_.map(tuple => tuple[PREVIOUS_STAGE[state.stage]])
+          ).length > 3
       }
     case STAGE_ACTIONS.RESET:
       return STAGE_INITIAL_STATE
@@ -332,7 +347,7 @@ const App = () => {
                 highlightClassName={styles.descriptionHighlight}
                 highlightStyle={{
                   whiteSpace:
-                    stage.tuples[0].chunks.length > 40 ? 'pre-wrap' : 'nowrap'
+                    stage.tuples[0].chunks.length > 25 ? 'pre-wrap' : 'nowrap'
                 }}
                 searchWords={[stage.tuples[0].chunks]}
                 autoEscape={true}
