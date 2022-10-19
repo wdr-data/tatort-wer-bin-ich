@@ -2,7 +2,7 @@ import { useReducer } from 'react'
 
 import {
   Button as MUIButton,
-  Chip,
+  Chip as MUIChip,
   Link,
   Stack,
   Typography
@@ -26,6 +26,19 @@ const Button = ({ children, ...props }) => (
   >
     {children}
   </MUIButton>
+)
+
+const Chip = ({ children, ...props }) => (
+  <MUIChip
+    {...props}
+    className={styles.chip}
+    disableElevation
+    disableFocusRipple
+    disableRipple
+    disableTouchRipple
+  >
+    {children}
+  </MUIChip>
 )
 
 const TUPLES = data.tuples.map(tuple => {
@@ -275,6 +288,7 @@ const App = () => {
           direction={'row'}
           gap={'10px'}
           flexWrap={'wrap'}
+          justifyContent={'center'}
           className={styles.choicesMade}
         >
           {Object.entries(stage.choicesMade).map(([stage, choice]) => (
