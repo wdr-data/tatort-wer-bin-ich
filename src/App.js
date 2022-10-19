@@ -29,14 +29,7 @@ const Button = ({ children, ...props }) => (
 )
 
 const Chip = ({ children, ...props }) => (
-  <MUIChip
-    {...props}
-    className={styles.chip}
-    disableElevation
-    disableFocusRipple
-    disableRipple
-    disableTouchRipple
-  >
+  <MUIChip {...props} className={styles.chip}>
     {children}
   </MUIChip>
 )
