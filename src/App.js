@@ -110,7 +110,7 @@ const getRandomOptions = (options, count) => {
   const result = []
   const maxTries = 100
   let tries = 0
-  console.log('options', options)
+
   while (result.length < count) {
     const randomIndex = Math.floor(Math.random() * options.length)
     const randomOption = options[randomIndex]
@@ -153,7 +153,6 @@ const STAGE_ACTIONS = {
 }
 
 const stageReducer = (state, action) => {
-  console.log('reducing', state, action)
   switch (action.type) {
     case STAGE_ACTIONS.START:
       const startChoicesAvailable = getRandomOptions(
@@ -249,7 +248,6 @@ const stageReducer = (state, action) => {
 
 const App = () => {
   const [stage, dispatch] = useReducer(stageReducer, STAGE_INITIAL_STATE)
-  console.log('stage', stage)
 
   const handleStart = () => {
     dispatch({ type: STAGE_ACTIONS.START })
