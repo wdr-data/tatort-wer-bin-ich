@@ -139,6 +139,7 @@ const STAGE_INITIAL_STATE = {
   stage: STAGES.START,
   choicesAvailable: {},
   choicesMade: {},
+  choicesSeen: {},
   canReroll: true,
   tuples: TUPLES
 }
@@ -155,14 +156,18 @@ const stageReducer = (state, action) => {
   console.log('reducing', state, action)
   switch (action.type) {
     case STAGE_ACTIONS.START:
+      const startChoicesAvailable = getRandomOptions(
+        getUnique(TUPLES.map(tuple => tuple.adjectives)),
+        3
+      )
       return {
         ...state,
         stage: STAGES.ADJECTIVE,
         choicesAvailable: {
-          [STAGES.ADJECTIVE]: getRandomOptions(
-            getUnique(TUPLES.map(tuple => tuple.adjectives)),
-            3
-          )
+          [STAGES.ADJECTIVE]: startChoicesAvailable
+        },
+        choicesSeen: {
+          [STAGES.ADJECTIVE]: startChoicesAvailable
         }
       }
     case STAGE_ACTIONS.CHOOSE:
@@ -175,28 +180,48 @@ const stageReducer = (state, action) => {
       const nextChoicesList = getUnique(
         filteredTuples.map(tuple => tuple[nextStage])
       )
-
+      const nextChoicesAvailable = getRandomOptions(nextChoicesList, 3)
       return {
         ...state,
         stage: nextStage,
         choicesAvailable: {
           ...state.choicesAvailable,
           // TODO: Maybe choose from unique options only?
-          [nextStage]: getRandomOptions(nextChoicesList, 3)
+          [nextStage]: nextChoicesAvailable
         },
         canReroll: nextChoicesList.length > 3,
         choicesMade: nextChoicesMade,
+        choicesSeen: {
+          ...state.choicesSeen,
+          [nextStage]: nextChoicesAvailable
+        },
         tuples: filteredTuples
       }
     case STAGE_ACTIONS.REROLL:
+      let resetSeen = false
+      let rerollPotentialChoices = getUnique(
+        state.tuples.map(tuple => tuple[state.stage])
+      ).filter(option => !state.choicesSeen[state.stage].includes(option))
+
+      if (rerollPotentialChoices.length === 0) {
+        rerollPotentialChoices = getUnique(
+          state.tuples.map(tuple => tuple[state.stage])
+        )
+        resetSeen = true
+      }
+
+      const rerollOptions = getRandomOptions(rerollPotentialChoices, 3)
       return {
         ...state,
         choicesAvailable: {
           ...state.choicesAvailable,
-          [state.stage]: getRandomOptions(
-            getUnique(state.tuples.map(tuple => tuple[state.stage])),
-            3
-          )
+          [state.stage]: rerollOptions
+        },
+        choicesSeen: {
+          ...state.choicesSeen,
+          [state.stage]: resetSeen
+            ? [...rerollOptions]
+            : [...state.choicesSeen[state.stage], ...rerollOptions]
         }
       }
     case STAGE_ACTIONS.BACK:
