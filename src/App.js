@@ -263,7 +263,9 @@ const stageReducer = (state, action) => {
         return previousState
       }
     case STAGE_ACTIONS.RESET:
-      return STAGE_INITIAL_STATE
+      return stageReducer(STAGE_INITIAL_STATE, {
+        type: STAGE_ACTIONS.START
+      })
     default:
       return state
   }
@@ -313,9 +315,9 @@ const App = () => {
           </Button>
         )}
 
-        {stage.stage !== STAGES.START && (
+        {[STAGES.RESULT].includes(stage.stage) && (
           <Button variant='contained' onClick={handleReset}>
-            Reset
+            Von vorne
           </Button>
         )}
       </Stack>
