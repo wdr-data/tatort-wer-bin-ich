@@ -36,6 +36,7 @@ const Chip = ({ children, ...props }) => (
 
 const TUPLES = data.tuples.map(tuple => {
   const [
+    adjectiveTypeIdx,
     nounsIdx,
     adjectivesIdx,
     placesIdx,
@@ -46,6 +47,7 @@ const TUPLES = data.tuples.map(tuple => {
     chunksIdx
   ] = tuple
   return {
+    adjectiveTypes: data.adjective_types[adjectiveTypeIdx],
     nouns: data.nouns[nounsIdx],
     adjectives: data.adjectives[adjectivesIdx],
     places: data.places[placesIdx],
@@ -61,6 +63,7 @@ console.log(TUPLES)
 
 const STAGES = {
   START: 'start',
+  ADJECTIVE_TYPE: 'adjectiveTypes',
   ADJECTIVE: 'adjectives',
   NOUN: 'nouns',
   PLACE: 'places',
@@ -69,6 +72,7 @@ const STAGES = {
 
 const STAGE_INSTRUCTIONS = {
   [STAGES.START]: "Mit dem Start-Button geht's los!",
+  [STAGES.ADJECTIVE_TYPE]: 'Was für Eigenschaften interessieren dich?',
   [STAGES.ADJECTIVE]: 'Welches Attribut trifft am ehesten auf dich zu?',
   [STAGES.NOUN]: 'Welcher dieser Charaktere trifft am ehesten auf dich zu?',
   [STAGES.PLACE]: 'Zu welcher Stadt fühlst du dich am ehesten zugehörig?',
@@ -76,7 +80,8 @@ const STAGE_INSTRUCTIONS = {
 }
 
 const NEXT_STAGE = {
-  [STAGES.START]: STAGES.ADJECTIVE,
+  [STAGES.START]: STAGES.ADJECTIVE_TYPE,
+  [STAGES.ADJECTIVE_TYPE]: STAGES.ADJECTIVE,
   [STAGES.ADJECTIVE]: STAGES.NOUN,
   [STAGES.NOUN]: STAGES.PLACE,
   [STAGES.PLACE]: STAGES.RESULT
@@ -148,18 +153,17 @@ const STAGE_ACTIONS = {
 const stageReducer = (state, action) => {
   switch (action.type) {
     case STAGE_ACTIONS.START:
-      const startChoicesAvailable = getRandomOptions(
-        getUnique(TUPLES.map(tuple => tuple.adjectives)),
-        3
+      const startChoicesAvailable = getUnique(
+        TUPLES.map(tuple => tuple.adjectiveTypes)
       )
       return {
         ...state,
-        stage: STAGES.ADJECTIVE,
+        stage: STAGES.ADJECTIVE_TYPE,
         choicesAvailable: {
-          [STAGES.ADJECTIVE]: startChoicesAvailable
+          [STAGES.ADJECTIVE_TYPE]: startChoicesAvailable
         },
         choicesSeen: {
-          [STAGES.ADJECTIVE]: startChoicesAvailable
+          [STAGES.ADJECTIVE_TYPE]: startChoicesAvailable
         }
       }
     case STAGE_ACTIONS.CHOOSE:
@@ -275,7 +279,9 @@ const App = () => {
         alignItems={'start'}
         className={styles.controls}
       >
-        {[STAGES.NOUN, STAGES.PLACE, STAGES.RESULT].includes(stage.stage) && (
+        {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE, STAGES.RESULT].includes(
+          stage.stage
+        ) && (
           <Button variant='contained' onClick={handleBack}>
             Zurück
           </Button>
@@ -299,7 +305,9 @@ const App = () => {
         <div className={styles.controlSpacer} />
       )}
 
-      {![STAGES.START, STAGES.ADJECTIVE].includes(stage.stage) && (
+      {![STAGES.START, STAGES.ADJECTIVE_TYPE, STAGES.ADJECTIVE].includes(
+        stage.stage
+      ) && (
         <Stack
           direction={'row'}
           gap={'10px'}
@@ -307,9 +315,11 @@ const App = () => {
           justifyContent={'center'}
           className={styles.choicesMade}
         >
-          {Object.entries(stage.choicesMade).map(([stage, choice]) => (
-            <Chip key={stage} label={choice} color='secondary' />
-          ))}
+          {Object.entries(stage.choicesMade)
+            .filter(([stage, choice]) => stage !== STAGES.ADJECTIVE_TYPE)
+            .map(([stage, choice]) => (
+              <Chip key={stage} label={choice} color='secondary' />
+            ))}
         </Stack>
       )}
 
