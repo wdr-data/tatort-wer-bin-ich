@@ -336,6 +336,7 @@ const App = () => {
         >
           {Object.entries(stage.choicesMade)
             .filter(([stage, choice]) => stage !== STAGES.ADJECTIVE_TYPE)
+            .filter(([stage_, choice]) => !stage.skippedStage[stage_])
             .map(([stage, choice]) => (
               <Chip key={stage} label={choice} color='secondary' />
             ))}
