@@ -287,13 +287,6 @@ const App = () => {
           </Button>
         )}
 
-        {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(stage.stage) &&
-          stage.canReroll && (
-            <Button variant='contained' onClick={handleReroll}>
-              Neue Wörter
-            </Button>
-          )}
-
         {stage.stage !== STAGES.START && (
           <Button variant='contained' onClick={handleReset}>
             Reset
@@ -350,6 +343,21 @@ const App = () => {
           ))}
         </Stack>
       )}
+
+      {[STAGES.ADJECTIVE, STAGES.NOUN, STAGES.PLACE].includes(stage.stage) &&
+        stage.canReroll && (
+          <Stack
+            direction={'row'}
+            gap={'10px'}
+            flexWrap={'wrap'}
+            justifyContent={'center'}
+            className={styles.otherChoices}
+          >
+            <Button variant='contained' onClick={handleReroll}>
+              Neue Wörter
+            </Button>
+          </Stack>
+        )}
 
       {stage.stage === STAGES.RESULT && (
         <Chip
