@@ -138,6 +138,7 @@ const STAGE_INITIAL_STATE = {
   choicesAvailable: {},
   choicesMade: {},
   choicesSeen: {},
+  skippedStage: {},
   canReroll: true,
   tuples: TUPLES
 }
@@ -177,6 +178,8 @@ const stageReducer = (state, action) => {
         filteredTuples.map(tuple => tuple[nextStage])
       )
       const nextChoicesAvailable = getRandomOptions(nextChoicesList, 3)
+      const skipStage =
+        ![STAGES.RESULT].includes(nextStage) && nextChoicesList.length === 1
 
       const nextState = {
         ...state,
@@ -192,14 +195,12 @@ const stageReducer = (state, action) => {
           ...state.choicesSeen,
           [nextStage]: nextChoicesAvailable
         },
+        skippedStage: { ...state.skippedStage, [nextStage]: skipStage },
         tuples: filteredTuples
       }
 
       // If the next stage has only one option available choose it instantly
-      if (
-        ![STAGES.RESULT].includes(nextStage) &&
-        nextChoicesList.length === 1
-      ) {
+      if (skipStage) {
         return stageReducer(nextState, {
           type: STAGE_ACTIONS.CHOOSE,
           payload: nextChoicesAvailable[0]
@@ -252,10 +253,7 @@ const stageReducer = (state, action) => {
       }
 
       // Skip place in the backwards direction as well, if there was only one option
-      if (
-        state.choicesAvailable[previousStage].length === 1 &&
-        !previousState.canReroll
-      ) {
+      if (state.skippedStage[previousStage]) {
         return stageReducer(previousState, {
           type: STAGE_ACTIONS.BACK
         })
