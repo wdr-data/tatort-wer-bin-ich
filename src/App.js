@@ -177,7 +177,8 @@ const stageReducer = (state, action) => {
         filteredTuples.map(tuple => tuple[nextStage])
       )
       const nextChoicesAvailable = getRandomOptions(nextChoicesList, 3)
-      return {
+
+      const nextState = {
         ...state,
         stage: nextStage,
         choicesAvailable: {
@@ -192,6 +193,19 @@ const stageReducer = (state, action) => {
           [nextStage]: nextChoicesAvailable
         },
         tuples: filteredTuples
+      }
+
+      // If the next stage has only one option available choose it instantly
+      if (
+        ![STAGES.RESULT].includes(nextStage) &&
+        nextChoicesList.length === 1
+      ) {
+        return stageReducer(nextState, {
+          type: STAGE_ACTIONS.CHOOSE,
+          payload: nextChoicesAvailable[0]
+        })
+      } else {
+        return nextState
       }
     case STAGE_ACTIONS.REROLL:
       let resetSeen = false
@@ -221,20 +235,32 @@ const stageReducer = (state, action) => {
         }
       }
     case STAGE_ACTIONS.BACK:
+      const previousStage = PREVIOUS_STAGE[state.stage]
       const prevChoicesMade = {
         ...state.choicesMade
       }
-      delete prevChoicesMade[PREVIOUS_STAGE[state.stage]]
+      delete prevChoicesMade[previousStage]
       const filteredTuples_ = filterTuples(TUPLES, prevChoicesMade)
-      return {
+      const previousState = {
         ...state,
-        stage: PREVIOUS_STAGE[state.stage],
+        stage: previousStage,
         choicesMade: prevChoicesMade,
         tuples: filteredTuples_,
         canReroll:
-          getUnique(
-            filteredTuples_.map(tuple => tuple[PREVIOUS_STAGE[state.stage]])
-          ).length > 3
+          getUnique(filteredTuples_.map(tuple => tuple[previousStage])).length >
+          3
+      }
+
+      // Skip place in the backwards direction as well, if there was only one option
+      if (
+        state.choicesAvailable[previousStage].length === 1 &&
+        !previousState.canReroll
+      ) {
+        return stageReducer(previousState, {
+          type: STAGE_ACTIONS.BACK
+        })
+      } else {
+        return previousState
       }
     case STAGE_ACTIONS.RESET:
       return STAGE_INITIAL_STATE
