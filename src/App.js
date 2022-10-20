@@ -391,7 +391,7 @@ const App = () => {
         <Chip
           variant='outlined'
           color='secondary'
-          label={stage.tuples[0].chunks}
+          label={`"${stage.tuples[0].chunks}"`}
         />
       )}
 
