@@ -416,18 +416,20 @@ const App = () => {
               Link zur Folge
             </Link>
             <br />
-            <Typography variant='body2'>
-              <Highlighter
-                highlightClassName={styles.descriptionHighlight}
-                highlightStyle={{
-                  whiteSpace:
-                    stage.tuples[0].chunks.length > 25 ? 'pre-wrap' : 'nowrap'
-                }}
-                searchWords={[stage.tuples[0].chunks]}
-                autoEscape={true}
-                textToHighlight={stage.tuples[0].descriptions}
-              />
-            </Typography>
+            {stage.tuples[0].descriptions.split(';').map((description, i) => (
+              <Typography key={i} variant='body2'>
+                <Highlighter
+                  highlightClassName={styles.descriptionHighlight}
+                  highlightStyle={{
+                    whiteSpace:
+                      stage.tuples[0].chunks.length > 25 ? 'pre-wrap' : 'nowrap'
+                  }}
+                  searchWords={[stage.tuples[0].chunks]}
+                  autoEscape={true}
+                  textToHighlight={description}
+                />
+              </Typography>
+            ))}
           </Stack>
         </div>
       )}
