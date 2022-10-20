@@ -72,11 +72,11 @@ const STAGES = {
 
 const STAGE_INSTRUCTIONS = {
   [STAGES.START]: "Mit dem Start-Button geht's los!",
-  [STAGES.ADJECTIVE_TYPE]: 'Was für Eigenschaften interessieren dich?',
-  [STAGES.ADJECTIVE]: 'Welches Attribut trifft am ehesten auf dich zu?',
-  [STAGES.NOUN]: 'Welcher dieser Charaktere trifft am ehesten auf dich zu?',
-  [STAGES.PLACE]: 'Zu welcher Stadt fühlst du dich am ehesten zugehörig?',
-  [STAGES.RESULT]: 'Das ist dein Tatort-Charakter:'
+  [STAGES.ADJECTIVE_TYPE]: 'Was ist Ihnen wichtig?',
+  [STAGES.ADJECTIVE]: 'Wie sollte Ihr Lieblingscharakter sein?',
+  [STAGES.NOUN]: 'Welche Rolle sollte Ihr Lieblingscharakter spielen?',
+  [STAGES.PLACE]: 'Woher soll Ihr Lieblingscharakter kommen? ',
+  [STAGES.RESULT]: 'Das ist Ihr Tatort-Charakter:'
 }
 
 const NEXT_STAGE = {
