@@ -2,6 +2,7 @@ $padding-vertical: 0px;
 $padding-horizontal: 0px;
 
 .app {
+  position: relative;
   height: calc(100% - $padding-vertical * 2);
   width: calc(100% - $padding-horizontal * 2);
   padding: $padding-vertical $padding-horizontal;

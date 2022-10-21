@@ -14,9 +14,43 @@ body {
 
 #root {
   height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
+}
+
+@media screen and (max-width: 310px) {
+  #root {
+    width: calc(100% - 30px);
+    padding: 0 15px;
+  }
+}
+
+@media screen and (min-width: 460px) {
+  #root {
+    width: calc(100% - 47px);
+    padding: 0 23.5px;
+  }
+}
+
+@media screen and (min-width: 740px) {
+  #root {
+    width: calc(100% - 30px);
+    padding: 0 15px;
+  }
+}
+
+@media screen and (min-width: 970px) {
+  #root {
+    width: calc(100% - 100px);
+    padding: 0 50px;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  #root {
+    width: calc(100% - 140px);
+    padding: 0 70px;
+  }
 }
 
 code {
