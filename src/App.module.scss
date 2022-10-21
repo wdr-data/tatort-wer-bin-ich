@@ -71,12 +71,13 @@ $padding-horizontal: 0px;
   padding: 5px 0 0 0;
   margin: 0;
 
+  $gradient-height: 30px;
   .fadeGradientTop {
     position: absolute;
     top: 5;
     left: 0;
     right: 0;
-    height: 15px;
+    height: $gradient-height;
     background: linear-gradient(to bottom, #e2e6ef, transparent);
   }
   .fadeGradientBottom {
@@ -84,12 +85,13 @@ $padding-horizontal: 0px;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 15px;
+    height: $gradient-height;
     background: linear-gradient(to top, #e2e6ef, transparent);
   }
+  $result-padding: $gradient-height - 10px;
   .result {
-    max-height: calc(100% - 30px);
-    padding: 15px 0;
+    max-height: calc(100% - $result-padding * 2);
+    padding: $result-padding 0;
     overflow: auto;
     text-align: left;
 
